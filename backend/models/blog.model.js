@@ -1,48 +1,51 @@
 import { Schema, model } from "mongoose";
 
-let blogSchema = new Schema({
-  title: {
-    type: String,
-    minLength: [6, "Title should be more than 6 characters"],
-    trim: true,
-    unique: true,
-    required: [true, "Title is required"],
-  },
-  description: {
-    type: String,
-    trim: true,
-    required: [true, "Description is required"],
-    validate: {
-      validator: function (value) {
-        // Split the text by whitespace characters and filter out any empty strings
-        const words = value.trim().split(/\s+/);
-        return words.length >= 20;
+let blogSchema = new Schema(
+  {
+    title: {
+      type: String,
+      minLength: [6, "Title should be more than 6 characters"],
+      trim: true,
+      unique: true,
+      required: [true, "Title is required"],
+    },
+    description: {
+      type: String,
+      trim: true,
+      required: [true, "Description is required"],
+      validate: {
+        validator: function (value) {
+          // Split the text by whitespace characters and filter out any empty strings
+          const words = value.trim().split(/\s+/);
+          return words.length >= 20;
+        },
+        message: "Description should contain more than 20 words",
       },
-      message:"Description should contain more than 20 words"
     },
-    image:{
-        type:String,
-        default:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREO3tkIJnmJZcWmgLLR-z973QVHQ8zbwDGnw&s"
+    blogImage: {
+      type: String,
+      default:
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREO3tkIJnmJZcWmgLLR-z973QVHQ8zbwDGnw&s",
     },
-    authorId:{
-        type:Schema.Types.ObjectId,
-        ref:"User",
-        required:[true,"Author field is required"]
+    authorId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: [true, "Author field is required"],
     },
-    comments:{
-        type:[Schema.Types.ObjectId],
-        ref:"Comment"
+    comments: {
+      type: [Schema.Types.ObjectId],
+      ref: "Comment",
     },
-    views:{
-        type:Number,
-        default:0
+    views: {
+      type: Number,
+      default: 0,
     },
-    likes:{
-        type:[Schema.Types.ObjectId],
-        ref:"User"
-    }
+    likes: {
+      type: [Schema.Types.ObjectId],
+      ref: "User",
+    },
   },
-},{timestamps:true});
+  { timestamps: true }
+);
 
-
-export default model("Blog",blogSchema)
+export default model("Blog", blogSchema);

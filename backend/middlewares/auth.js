@@ -15,7 +15,7 @@ const auth = async (req, res, next) => {
     err.statusCode = 401;
     throw err;
   }
-  req.user = user;
+  req.userId = user._id;
   next();
 };
 
