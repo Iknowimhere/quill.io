@@ -41,6 +41,14 @@ const userSchema = new Schema(
         message: "Password and confirm password",
       },
     },
+    role: {
+      type: String,
+      enum: {
+        values: ["author", "user", "admin"],
+        message: "{VALUE} is not supported",
+      },
+      default:'user'
+    },
     displayPicture: {
       type: String,
       default:
@@ -52,14 +60,12 @@ const userSchema = new Schema(
 
 userSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, 10);
-  this.confirmPassword=undefined;
+  this.confirmPassword = undefined;
   next();
 });
 
-
-userSchema.methods.verifyPassword=async function(pwd,pwdDb){
-    return await bcrypt.compare(pwd,pwdDb)
-}
-
+userSchema.methods.verifyPassword = async function (pwd, pwdDb) {
+  return await bcrypt.compare(pwd, pwdDb);
+};
 
 export default model("User", userSchema);
