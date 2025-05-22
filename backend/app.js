@@ -5,6 +5,7 @@ import db from './config/db.js';
 import authRoutes from './routes/auth.routes.js';
 import globalErrorHandler from './middlewares/globalErrorHandler.js';
 import blogRoutes from './routes/blog.routes.js'
+import userRoutes from './routes/user.routes.js'
 let app=express()
 db()
 
@@ -14,6 +15,7 @@ app.use(express.json())
 //routes
 app.use("/api/v1/auth",authRoutes)
 app.use("/api/v1/blogs",blogRoutes)
+app.use("/api/v1/users",userRoutes)
 
 
 //global error handler
