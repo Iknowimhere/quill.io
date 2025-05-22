@@ -1,12 +1,11 @@
 import express from 'express'
-import auth from '../middlewares/auth.js'
+import auth, { verifyRole } from '../middlewares/auth.js'
 import { createBlog, deleteBlog, getBlog, getBlogs, updateBlog } from '../controllers/blog.controllers.js'
 let router=express.Router()
 
-router.post("/",auth,createBlog)
+router.post("/",auth,verifyRole("admin","author"),createBlog)
 router.get("/",getBlogs)
-// router.get("/:id",auth,getBlog)
-router.get("/:slug",getBlog)
+router.get("/:slug",auth,getBlog)
 router.put("/:id",auth,updateBlog)
 router.delete("/:id",auth,deleteBlog)
 

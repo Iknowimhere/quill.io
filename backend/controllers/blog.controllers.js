@@ -43,6 +43,7 @@ const getBlog=async (req,res,next)=>{
         blog
     })
 }
+
 const updateBlog=async (req,res,next)=>{
     let {id}=req.params;
     let upatedBlog=await Blog.findByIdAndUpdate(id,{...req.body},{new:true})
