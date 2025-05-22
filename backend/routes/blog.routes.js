@@ -5,7 +5,8 @@ let router=express.Router()
 
 router.post("/",auth,createBlog)
 router.get("/",getBlogs)
-router.get("/:id",auth,getBlog)
+// router.get("/:id",auth,getBlog)
+router.get("/:slug",getBlog)
 router.put("/:id",auth,updateBlog)
 router.delete("/:id",auth,deleteBlog)
 

@@ -9,6 +9,10 @@ let blogSchema = new Schema(
       unique: true,
       required: [true, "Title is required"],
     },
+    slug: {
+      type: String,
+      required: [true, "Slug is required"],
+    },
     description: {
       type: String,
       trim: true,
@@ -47,5 +51,7 @@ let blogSchema = new Schema(
   },
   { timestamps: true }
 );
+
+
 
 export default model("Blog", blogSchema);

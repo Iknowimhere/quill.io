@@ -1,4 +1,5 @@
 import Blog from "../models/blog.model.js"
+import slugify from "../utils/slugify.js";
 
 const createBlog=async (req,res,next)=>{
     let {userId}=req;
@@ -8,7 +9,8 @@ const createBlog=async (req,res,next)=>{
     let newBlog=await Blog.create({
         title,
         description,
-        authorId:userId
+        authorId:userId,
+        slug:slugify(title)
     })
 
     res.status(201).json({
@@ -34,8 +36,8 @@ const getBlogs=async (req,res,next)=>{
 }
 
 const getBlog=async (req,res,next)=>{
-    let {id}=req.params;
-    let blog=await Blog.findById(id)
+    let {slug}=req.params;
+    let blog=await Blog.findOne({slug})
     res.status(201).json({
         message:"Feteched blog Successfully",
         blog
