@@ -21,12 +21,12 @@ const createBlog=async (req,res,next)=>{
 }
 
 const getBlogs=async (req,res,next)=>{
-    let queryObj={};
-    if(req.query.search){
-        queryObj={title:{$regex:req.query.search,$options:"i"}}
-    }
+    let {search="",category=""}=req.query
+    
+    let queryObj={title:{$regex:search,$options:"i"}}
+
     if(req.query.category){
-        queryObj.category=req.query.category
+        queryObj.category=category
     }
     let blogs=await Blog.find(queryObj)
     res.status(200).json({
