@@ -31,6 +31,34 @@ let blogSchema = new Schema(
       default:
         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREO3tkIJnmJZcWmgLLR-z973QVHQ8zbwDGnw&s",
     },
+    category: {
+      type: String,
+      enum: {
+        values: [
+          "Technology",
+          "Programming",
+          "Web Development",
+          "Mobile Development",
+          "AI & Machine Learning",
+          "Data Science",
+          "Cybersecurity",
+          "Design & UX",
+          "Business",
+          "Startups",
+          "Productivity",
+          "Marketing",
+          "Finance",
+          "Health & Wellness",
+          "Travel",
+          "Education",
+          "Gaming",
+          "Lifestyle",
+          "News",
+          "Opinion",
+        ],
+        message: "{VALUE} is not supported",
+      },
+    },
     authorId: {
       type: Schema.Types.ObjectId,
       ref: "User",
@@ -51,7 +79,5 @@ let blogSchema = new Schema(
   },
   { timestamps: true }
 );
-
-
 
 export default model("Blog", blogSchema);

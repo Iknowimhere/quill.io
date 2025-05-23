@@ -5,9 +5,10 @@ const createBlog=async (req,res,next)=>{
     let {userId}=req;
     console.log(userId);
     
-    let {title,description}=req.body;
+    let {title,description,category}=req.body;
     let newBlog=await Blog.create({
         title,
+        category,
         description,
         authorId:userId,
         slug:slugify(title)
@@ -20,14 +21,23 @@ const createBlog=async (req,res,next)=>{
 }
 
 const getBlogs=async (req,res,next)=>{
-    let blogs=await Blog.find()
-    res.status(201).json({
+    let queryObj={};
+    if(req.query.search){
+        queryObj={title:{$regex:req.query.search,$options:"i"}}
+    }
+    if(req.query.category){
+        queryObj.category=req.query.category
+    }
+    let blogs=await Blog.find(queryObj)
+    res.status(200).json({
         message:"Fetched Blogs Successfully",
         blogs:blogs.map(blog=>{
             return {
                 title:blog.title,
                 blogImage:blog.blogImage,
                 comments:blog?.comments,
+                category:blog.category,
+                slug:blog.slug,
                 likes:blog?.likes,
                 views:blog?.views
             }
