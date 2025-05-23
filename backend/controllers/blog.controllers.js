@@ -21,16 +21,20 @@ const createBlog=async (req,res,next)=>{
 }
 
 const getBlogs=async (req,res,next)=>{
-    let {search="",category=""}=req.query
+    let {search="",category="",page=1,limit=5}=req.query
     
     let queryObj={title:{$regex:search,$options:"i"}}
 
     if(req.query.category){
         queryObj.category=category
     }
-    let blogs=await Blog.find(queryObj)
+    let blogs=await Blog.find(queryObj).sort({createdAt:-1}).skip((page-1)*limit).limit(limit)
+
+    let totalBlogs=await Blog.countDocuments()
     res.status(200).json({
         message:"Fetched Blogs Successfully",
+        totalBlogs,
+        page,
         blogs:blogs.map(blog=>{
             return {
                 title:blog.title,
