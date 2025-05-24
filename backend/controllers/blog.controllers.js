@@ -28,7 +28,10 @@ const getBlogs=async (req,res,next)=>{
     if(req.query.category){
         queryObj.category=category
     }
-    let blogs=await Blog.find(queryObj).sort({createdAt:-1}).skip((page-1)*limit).limit(limit)
+    let blogs=await Blog.find(queryObj)
+    .sort({createdAt:-1})
+    .skip((page-1)*limit)
+    .limit(limit)
 
     let totalBlogs=await Blog.countDocuments()
     res.status(200).json({

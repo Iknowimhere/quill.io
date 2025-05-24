@@ -11,6 +11,9 @@ db()
 
 //middlewares
 app.use(express.json())
+app.use(express.urlencoded({extended:true}))
+app.use(express.static("public"))
+
 
 //routes
 app.use("/api/v1/auth",authRoutes)
