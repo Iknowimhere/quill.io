@@ -95,6 +95,7 @@ const addViews = async (req, res, next) => {
   let blog = await Blog.findById(id);
   blog.views = blog.views + 1;
   await blog.save();
+  return res.status(200).send()
 };
 
 const toggleLike = async (req, res, next) => {
@@ -108,12 +109,15 @@ const toggleLike = async (req, res, next) => {
   let blog = await Blog.findById(id);
   let result = blog.likes.includes(req.userId);
   if (result) {
-      blog.likes.filter((id) => id !== req.userId);
-      await blog.save();
+      let index=blog.likes.findIndex((id) => id == req.userId);
+      blog.likes.splice(index,1);
+      await blog.save()
+      return res.status(200).send()
     }
     //user is not present we push user into likes array
     blog.likes.push(user?._id);
     await blog.save()
+    return res.status(200).send()
 };
 
 export { createBlog, getBlogs, getBlog, updateBlog, deleteBlog, addViews,toggleLike };
