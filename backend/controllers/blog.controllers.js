@@ -8,10 +8,11 @@ const createBlog=async (req,res,next)=>{
     let {title,description,category}=req.body;
     let newBlog=await Blog.create({
         title,
+        slug:slugify(title),
         category,
         description,
         authorId:userId,
-        slug:slugify(title)
+        blogImage:req.file.path,
     })
 
     res.status(201).json({
