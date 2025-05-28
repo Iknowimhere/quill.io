@@ -56,8 +56,8 @@ const getBlogs = async (req, res, next) => {
 
 const getBlog = async (req, res, next) => {
   let { slug } = req.params;
-  let blog = await Blog.findOne({ slug });
-  res.status(201).json({
+  let blog = await Blog.findOne({ slug }).populate("authorId","username email role displayPicture");
+  res.status(200).json({
     message: "Feteched blog Successfully",
     blog,
   });
@@ -84,7 +84,7 @@ const deleteBlog = async (req, res, next) => {
   });
 };
 
-const addViews = async (req, res, next) => {
+const updateViews = async (req, res, next) => {
   let { id } = req.params;
   let user = await User.findById(req.userId);
   if (!user) {
@@ -120,4 +120,4 @@ const toggleLike = async (req, res, next) => {
     return res.status(200).send()
 };
 
-export { createBlog, getBlogs, getBlog, updateBlog, deleteBlog, addViews,toggleLike };
+export { createBlog, getBlogs, getBlog, updateBlog, deleteBlog, updateViews,toggleLike };
