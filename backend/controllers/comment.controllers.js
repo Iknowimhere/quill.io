@@ -10,7 +10,7 @@ export const postComment=async (req,res,next)=>{
         userId:req?.userId
     })
     res.status(201).json({
-        message:"Commented successfully",
+        message:"Comment posted successfully",
         newComment
     })
 }

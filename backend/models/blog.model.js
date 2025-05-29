@@ -33,6 +33,7 @@ let blogSchema = new Schema(
     },
     category: {
       type: String,
+      required:[true,"Category is required"],
       enum: {
         values: [
           "Technology",

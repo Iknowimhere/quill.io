@@ -2,7 +2,20 @@ import User from "../models/user.model.js";
 import generateToken from "../utils/generateToken.js";
 
 const signup = async (req, res, next) => {
+  if(!req.body?.username ||!req.body?.email || !req.body?.password || !req.body?.confirmPassword){
+    let err = new Error("Please fill all fields");
+    err.statusCode = 400;
+    throw err;
+  }
   let { username, email, password, confirmPassword } = req.body;
+    const userExists = await User.findOne({email});
+
+     if (userExists) {
+
+    let err = new Error("User with this email already exists");
+    err.statusCode = 409;
+    throw err;
+  }
   let newUser = await User.create({
     username,
     email,

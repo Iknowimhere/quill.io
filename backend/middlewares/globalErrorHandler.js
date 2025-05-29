@@ -1,41 +1,40 @@
-let globalErrorHandler=(err,req,res,next)=>{
-    
-    if(err.code===11000){
-        err.statusCode=400;
-        err.message="User with this email exists already!!"
-    }
+let globalErrorHandler = (err, req, res, next) => {
+  if (err.code === 11000) {
+    const field = Object.keys(err.keyValue)[0];
+    err.statusCode = 409;
+    err.message = `${field} already exists`;
+  }
 
+  if (err.name === "ValidationError") {
+    let msgs = [];
+    Object.values(err.errors).map((err) => {
+      msgs.push(err.message);
+    });
+    err.message = msgs.join(", ");
+    err.statusCode = 400;
+  }
 
-    if(err.name==="ValidationError"){
-        let msgs=[];
-         Object.values(err.errors).map(err=>{
-        msgs.push(err.message)
-        })
-        err.message=msgs.join(", ");
-        err.statusCode=400;
-    }
-   
-    if(err.name==="TokenExpiredError"){
-        err.statusCode=401;
-        err.message="Session timed out!"
-    }
+  if (err.name === "TokenExpiredError") {
+    err.statusCode = 401;
+    err.message = "Session timed out!";
+  }
 
-    if(err.name==="JsonWebTokenError"){
-        err.statusCode=404;
-        err.message="User doesnt exist";
-    }
-    
-    if(err.name==="CastError"){
-        err.statusCode=400;
-        err.message="Id not valid"
-    }
-    let message=err.message || "Something went wrong;"
-    let statusCode=err.statusCode || 500;
+  if (err.name === "JsonWebTokenError") {
+    err.statusCode = 404;
+    err.message = "User doesnt exist";
+  }
 
-    res.status(statusCode).json({
-        message:message,
-        errStackTrace:err.stack
-    })
-}
+  if (err.name === "CastError") {
+    err.statusCode = 400;
+    err.message = "Id not valid";
+  }
+  let message = err.message || "Something went wrong;";
+  let statusCode = err.statusCode || 500;
+
+  res.status(statusCode).json({
+    message: message,
+    errStackTrace: err.stack,
+  });
+};
 
 export default globalErrorHandler;
