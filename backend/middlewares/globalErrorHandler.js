@@ -1,9 +1,9 @@
 let globalErrorHandler = (err, req, res, next) => {
-  if (err.code === 11000) {
-    const field = Object.keys(err.keyValue)[0];
-    err.statusCode = 409;
-    err.message = `${field} already exists`;
-  }
+  // if (err.code === 11000) {
+  //   const field = Object.keys(err.keyValue)[0];
+  //   err.statusCode = 409;
+  //   err.message = `${field} already exists`;
+  // }
 
   if (err.name === "ValidationError") {
     let msgs = [];

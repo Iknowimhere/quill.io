@@ -103,6 +103,14 @@ const getBlog = async (req, res, next) => {
 const updateBlog = async (req, res, next) => {
   let { id } = req.params;
   const { userId } = req;
+  //find logged in user
+  let user = await User.findById(userId);
+  console.log(user);
+  if (!user) {
+    let err = new Error("User not found");
+    err.statusCode = 401;
+    throw err;
+  }
   // Find and verify blog exists
   const blog = await Blog.findById(id);
 
@@ -112,13 +120,14 @@ const updateBlog = async (req, res, next) => {
     throw err;
   }
 
+
   // Verify author
-  if (blog.authorId.toString() !== userId) {
+  if (blog.authorId.toString() !== userId.toString() && user.role !== "admin") {
     let err = new Error("You can only update your own blogs");
     err.statusCode = 403;
     throw err;
   }
-  let upatedBlog = await Blog.findByIdAndUpdate(
+  let updatedBlog = await Blog.findByIdAndUpdate(
     id,
     { ...req.body },
     { new: true }
@@ -131,14 +140,21 @@ const updateBlog = async (req, res, next) => {
 
   res.status(201).json({
     message: "Blog updated Successfully",
-    upatedBlog,
+    updatedBlog,
   });
 };
 
 const deleteBlog = async (req, res, next) => {
   let { id } = req.params;
   const { userId } = req;
-
+  //find logged in user
+  let user = await User.findById(userId);
+  console.log(user);
+  if (!user) {
+    let err = new Error("User not found");
+    err.statusCode = 401;
+    throw err;
+  }
   // Find and verify blog exists
   const blog = await Blog.findById(id);
 
@@ -149,7 +165,7 @@ const deleteBlog = async (req, res, next) => {
   }
 
   // Verify author
-  if (blog.authorId.toString() !== userId) {
+  if (blog.authorId.toString() !== userId.toString() && user.role!=="admin") {
     let err = new Error("You can only delete your own blogs");
     err.statusCode = 403;
     throw err;

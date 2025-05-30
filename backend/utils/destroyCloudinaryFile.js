@@ -14,7 +14,7 @@ const destroyFile = async (path) => {
     // Deleting the file from Cloudinary
     await cloudinary.uploader.destroy(publicId);
   } catch (error) {
-    let err=new Error("Error deleting cloudinary file")
+    let err=new Error(error.message)
     err.statusCode=400;
     throw err;
   }
