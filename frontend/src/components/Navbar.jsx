@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import Logo from '../assets/logo.svg'
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -18,12 +19,13 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <Link to="/" className="flex-shrink-0">
+            <Link to="/" className="flex-shrink-0 flex gap-2 items-center">
               <img
                 className="h-8 w-auto"
-                src="/logo.png" // Add your logo path here
+                src={Logo} // Add your logo path here
                 alt="Quill.io"
               />
+              <span className='font-bold'>Quill.io</span>
             </Link>
           </div>
 
