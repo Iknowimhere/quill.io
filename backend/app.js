@@ -6,10 +6,12 @@ import authRoutes from './routes/auth.routes.js';
 import globalErrorHandler from './middlewares/globalErrorHandler.js';
 import blogRoutes from './routes/blog.routes.js'
 import userRoutes from './routes/user.routes.js'
+import cors from 'cors'
 let app=express()
 db()
 
 //middlewares
+app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 app.use(express.static("public"))
