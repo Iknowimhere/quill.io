@@ -1,16 +1,17 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Logo from '../assets/logo.svg'
+import useAuth from '../context/AuthContext';
 
 const Navbar = () => {
+  let {token,user,setUser,setToken}=useAuth();
   const navigate = useNavigate();
-  // This should be replaced with your actual auth state management
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  
   const handleLogout = () => {
-    // Add your logout logic here
-    setIsAuthenticated(false);
+    setUser(null)
+    setToken(null)
     navigate('/');
   };
 
@@ -31,7 +32,7 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden sm:flex sm:items-center sm:space-x-4">
-            {!isAuthenticated ? (
+            {!token ? (
               <>
                 <Link
                   to="/login"
@@ -54,11 +55,11 @@ const Navbar = () => {
                 >
                   <img
                     className="h-8 w-8 rounded-full"
-                    src="/avatar-placeholder.png" // Add default avatar path
+                    src={user?.displayPicture} // Add default avatar path
                     alt="User avatar"
                   />
                   <span className="hidden md:block text-sm font-medium text-gray-700">
-                    John Doe
+                    {user?.username}
                   </span>
                 </button>
 
@@ -129,7 +130,7 @@ const Navbar = () => {
       {isMenuOpen && (
         <div className="sm:hidden">
           <div className="pt-2 pb-3 space-y-1">
-            {!isAuthenticated ? (
+            {!token ? (
               <>
                 <Link
                   to="/login"

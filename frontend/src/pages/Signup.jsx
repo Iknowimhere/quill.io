@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from '../axios';
+import useAuth from '../context/AuthContext';
 
 const Signup = () => {
   const navigate = useNavigate();
+  const {setUser,setToken}=useAuth()
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -66,10 +69,13 @@ const Signup = () => {
 
     setIsLoading(true);
     try {
-      // Add your signup logic here
-      // await registerUser(formData);
-      navigate('/login');
+      let response=await axios.post("/auth/signup",formData)
+      console.log(response);
+      setUser(JSON.stringify(response.data.newUser))
+      setToken(response.data.token)
+      navigate('/');
     } catch (error) {
+      console.log(error);
       setErrors({ submit: 'Registration failed. Please try again.' });
     } finally {
       setIsLoading(false);

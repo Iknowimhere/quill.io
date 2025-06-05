@@ -1,11 +1,14 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "../axios";
+import useAuth from "../context/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
+  let { setToken, setUser } = useAuth();
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -20,7 +23,7 @@ const Login = () => {
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
-        [name]: '',
+        [name]: "",
       }));
     }
   };
@@ -28,12 +31,12 @@ const Login = () => {
   const validateForm = () => {
     const newErrors = {};
     if (!formData.email) {
-      newErrors.email = 'Email is required';
+      newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
+      newErrors.email = "Email is invalid";
     }
     if (!formData.password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = "Password is required";
     }
     return newErrors;
   };
@@ -49,11 +52,12 @@ const Login = () => {
 
     setIsLoading(true);
     try {
-      // Add your login logic here
-      // await loginUser(formData);
-      navigate('/dashboard');
+      let response = await axios.post("/auth/login", formData);
+      setUser(JSON.stringify(response.data.existingUser));
+      setToken(response.data.token);
+      navigate("/");
     } catch (error) {
-      setErrors({ submit: 'Invalid credentials' });
+      setErrors({ submit: "Invalid credentials" });
     } finally {
       setIsLoading(false);
     }
@@ -67,7 +71,7 @@ const Login = () => {
             Welcome back to Quill.io
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Don't have an account?{' '}
+            Don't have an account?{" "}
             <Link
               to="/register"
               className="font-medium text-indigo-600 hover:text-indigo-500"
@@ -91,7 +95,7 @@ const Login = () => {
                 value={formData.email}
                 onChange={handleChange}
                 className={`appearance-none rounded-lg relative block w-full px-3 py-2 border ${
-                  errors.email ? 'border-red-300' : 'border-gray-300'
+                  errors.email ? "border-red-300" : "border-gray-300"
                 } placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm`}
                 placeholder="Email address"
               />
@@ -112,7 +116,7 @@ const Login = () => {
                 value={formData.password}
                 onChange={handleChange}
                 className={`appearance-none rounded-lg relative block w-full px-3 py-2 border ${
-                  errors.password ? 'border-red-300' : 'border-gray-300'
+                  errors.password ? "border-red-300" : "border-gray-300"
                 } placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm`}
                 placeholder="Password"
               />
@@ -163,7 +167,7 @@ const Login = () => {
                 Loading...
               </span>
             ) : (
-              'Sign in'
+              "Sign in"
             )}
           </button>
         </form>

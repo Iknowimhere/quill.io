@@ -1,7 +1,7 @@
 import User from "../models/user.model.js";
 import generateToken from "../utils/generateToken.js";
 
-const signup = async (req, res, next) => {
+const signup = async (req, res, next) => {    
   if(!req.body?.username ||!req.body?.email || !req.body?.password || !req.body?.confirmPassword){
     let err = new Error("Please fill all fields");
     err.statusCode = 400;
