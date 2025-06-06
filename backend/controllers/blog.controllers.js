@@ -78,7 +78,6 @@ const getBlogs = async (req, res, next) => {
       return {
         title: blog.title,
         blogImage: blog.blogImage,
-        comments: blog?.comments,
         category: blog.category,
         slug: blog.slug,
         likes: blog?.likes,
