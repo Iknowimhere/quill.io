@@ -93,6 +93,7 @@ const getBlog = async (req, res, next) => {
     "authorId",
     "username email role displayPicture"
   );
+  console.log(blog.authorId)
   res.status(200).json({
     message: "Feteched blog Successfully",
     blog,

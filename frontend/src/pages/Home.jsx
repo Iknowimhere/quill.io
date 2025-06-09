@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import axios from "../axios";
+import { Link } from "react-router-dom";
 
 const Home = () => {
   let [blogs, setBlogs] = useState([]);
@@ -9,7 +10,7 @@ const Home = () => {
   const [category, setCategory] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const limit = 5;
+  const limit = 10;
   const categories = [
           "Technology",
           "Programming",
@@ -61,6 +62,8 @@ const Home = () => {
     setCategory(e.target.value);
     setPage(1); // Reset to first page on category change
   };
+
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -122,9 +125,13 @@ const Home = () => {
               <>
                 <div className="space-y-6">
                   {blogs?.map((blog) => (
+                    
+                    
+                    <Link to={`/blog/${blog.slug}`} key={blog.slug}>
                     <div
-                      key={blog.slug}
+                      
                       className="bg-white shadow rounded-lg p-6 hover:shadow-md transition-shadow"
+                     
                     >
                       <h3 className="text-xl font-semibold text-gray-900">
                         {blog.title}
@@ -159,6 +166,7 @@ const Home = () => {
                         </div>
                       </div>
                     </div>
+                    </Link>
                   ))}
                 </div>
                 <div className="mt-8 flex justify-center">
