@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useSnackbar } from 'notistack';
+import { useSnackbar } from "notistack";
 import axios from "../axios";
 import useAuth from "../context/AuthContext";
 import Navbar from "../components/Navbar";
@@ -15,10 +15,6 @@ const SingleBlog = () => {
   const [comment, setComment] = useState("");
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchSingleBlog();
-  }, [slug]);
-
   const fetchSingleBlog = async () => {
     try {
       setLoading(true);
@@ -27,16 +23,21 @@ const SingleBlog = () => {
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log(res);
       setBlog(res.data.blog);
     } catch (error) {
       setError(error.response?.data?.message || "Error fetching blog");
-      enqueueSnackbar(error.response?.data?.message || "Error fetching blog", { 
-        variant: 'error' 
+      enqueueSnackbar(error.response?.data?.message || "Error fetching blog", {
+        variant: "error",
       });
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchSingleBlog();
+  }, [slug]);
 
   const handleComment = async (e) => {
     e.preventDefault();
@@ -45,7 +46,7 @@ const SingleBlog = () => {
     try {
       await axios.post(
         `/blogs/${blog._id}/comments`,
-        {  comment },
+        { comment },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -53,9 +54,29 @@ const SingleBlog = () => {
         }
       );
       setComment("");
-      fetchSingleBlog(); // Refresh to get new comments
+      fetchSingleBlog();
     } catch (error) {
       console.error("Error posting comment:", error);
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    try {
+      let res=await axios.delete(`/blogs/${blog._id}/comments/${commentId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(res);
+      enqueueSnackbar("Comment deleted successfully", { variant: "success",autoHideDuration:3000 });
+      fetchSingleBlog(); // Refresh comments after deletion
+    } catch (error) {
+      enqueueSnackbar(
+        error.response?.data?.message || "Error deleting comment",
+        {
+          variant: "error",
+        }
+      );
     }
   };
 
@@ -157,7 +178,7 @@ const SingleBlog = () => {
                 placeholder="Add a comment..."
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
                 rows="3"
-                style={{resize:"none"}}
+                style={{ resize: "none" }}
               />
               <button
                 type="submit"
@@ -175,22 +196,45 @@ const SingleBlog = () => {
             ) : (
               blog.comments.map((comment) => (
                 <div key={comment._id} className="border-b pb-4">
-                  <div className="flex items-center mb-2">
-                    <img
-                      src={comment.userId.displayPicture}
-                      alt={comment.userId.username}
-                      className="h-8 w-8 rounded-full object-cover"
-                    />
-                    <div className="ml-3">
-                      <p className="text-sm font-medium text-gray-900">
-                        {comment.userId.username}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {new Date(comment.createdAt).toLocaleDateString()}
-                      </p>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center">
+                      <img
+                        src={comment.userId.displayPicture}
+                        alt={comment.userId.username}
+                        className="h-8 w-8 rounded-full object-cover"
+                      />
+                      <div className="ml-3">
+                        <p className="text-sm font-medium text-gray-900">
+                          {comment.userId.username}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {new Date(comment.createdAt).toLocaleDateString()}
+                        </p>
+                      </div>
                     </div>
+                    {user && comment.userId._id === user._id && (
+                      <button
+                        onClick={() => handleDeleteComment(comment._id)}
+                        className="text-red-600 hover:text-red-800 text-sm flex items-center"
+                      >
+                        <svg
+                          className="h-4 w-4 mr-1"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                          />
+                        </svg>
+                        Delete
+                      </button>
+                    )}
                   </div>
-                  <p className="text-gray-700">{comment.content}</p>
+                  <p className="text-gray-700">{comment.comment}</p>
                 </div>
               ))
             )}

@@ -4,7 +4,7 @@ import {  createBlog, deleteBlog, getBlog, getBlogs, toggleLike, updateBlog, upd
 let router=express.Router()
 import multer from 'multer'
 import storage from '../middlewares/fileUpload.js'
-import { deleteComment, getComments, postComment } from '../controllers/comment.controllers.js'
+import { deleteComment, postComment } from '../controllers/comment.controllers.js'
 let upload=multer({storage})
 
 router.post("/",auth,verifyRole("admin","author"),upload.single("blogImage"),createBlog)
@@ -19,7 +19,6 @@ router.put("/:id/likes",auth,toggleLike)
 
 //comments
 router.post("/:id/comments",auth,postComment)
-router.get("/:id/comments",auth,getComments)
 router.delete("/:id/comments/:commentId",auth,deleteComment)
 
 export default router;

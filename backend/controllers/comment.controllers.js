@@ -1,44 +1,48 @@
-import Comment from "../models/comment.model.js"
+import Comment from "../models/comment.model.js";
+import Blog from "../models/blog.model.js";
 
+export const postComment = async (req, res, next) => {
+  let { id } = req.params;
+  let { comment } = req.body;
+  let blog = await Blog.findById(id);
 
-export const postComment=async (req,res,next)=>{
-    let {id}=req.params
-    let {comment}=req.body
-    let newComment=await Comment.create({
-        comment,
-        blogId:id,
-        userId:req?.userId
-    })
-    res.status(201).json({
-        message:"Comment posted successfully",
-        newComment
-    })
-}
+  let newComment = await Comment.create({
+    comment,
+    blogId: id,
+    userId: req?.userId,
+  });
+  blog.comments.push(newComment._id);
+  await blog.save();
+  res.status(201).json({
+    message: "Comment posted successfully",
+    newComment,
+  });
+};
 
+export const deleteComment = async (req, res, next) => {
+  let { id, commentId } = req.params;
+  console.log("hello");
+  let blog = await Blog.findById(id);
+  let comment = await Comment.findById(commentId);
+  if (comment.userId.toString() !== req.userId.toString()) {
+    let err = new Error("Not permitted");
+    err.statusCode = 403;
+    throw err;
+  }
+  let deletedBlog = await Comment.findByIdAndDelete(commentId);
+  let index = blog.comments.findIndex(
+    (comment) => comment.toString() === commentId.toString()
+  );
+  if (index < 0) {
+    let err = new Error("Invalid operation");
+    err.statusCode = 400;
+    throw err;
+  }
+  blog.comments.splice(index, 1);
+  await blog.save();
+  res.status(200).json({
+    message: "Commented deleted successfully",
+    deletedBlog,
+  });
+};
 
-export const deleteComment=async (req,res,next)=>{
-    let {id,commentId}=req.params
-
-    let comment=await Comment.findById(commentId)
-    if(comment.userId.toString()!==req.userId.toString()){
-        let err=new Error("Not permitted")
-        err.statusCode=403
-        throw err;
-    }
-
-    await Comment.findOneAndDelete({commentId,id})
-    res.status(204).json({
-        message:"Commented deleted successfully"
-    })
-}
-
-export const getComments=async (req,res,next)=>{
-    let {id}=req.params
-
-    let comments=await Comment.find({blogId:id}).populate("userId","username displayPicture")
- 
-    res.status(200).json({
-        message:"Commented fetched successfully",
-        comments
-    })
-}

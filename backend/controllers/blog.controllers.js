@@ -82,6 +82,7 @@ const getBlogs = async (req, res, next) => {
         slug: blog.slug,
         likes: blog?.likes,
         views: blog?.views,
+        comments: blog.comments,
       };
     }),
   });
@@ -89,11 +90,12 @@ const getBlogs = async (req, res, next) => {
 
 const getBlog = async (req, res, next) => {
   let { slug } = req.params;
-  let blog = await Blog.findOne({ slug }).populate(
-    "authorId",
-    "username email role displayPicture"
-  );
-  console.log(blog.authorId)
+  let blog = await Blog.findOne({ slug })
+    .populate({
+      path: "comments",
+      populate: { path: "userId", select: "username displayPicture" },
+    })
+    .populate("authorId", "username email role displayPicture");
   res.status(200).json({
     message: "Feteched blog Successfully",
     blog,
@@ -119,7 +121,6 @@ const updateBlog = async (req, res, next) => {
     err.statusCode = 404;
     throw err;
   }
-
 
   // Verify author
   if (blog.authorId.toString() !== userId.toString() && user.role !== "admin") {
@@ -165,7 +166,7 @@ const deleteBlog = async (req, res, next) => {
   }
 
   // Verify author
-  if (blog.authorId.toString() !== userId.toString() && user.role!=="admin") {
+  if (blog.authorId.toString() !== userId.toString() && user.role !== "admin") {
     let err = new Error("You can only delete your own blogs");
     err.statusCode = 403;
     throw err;
