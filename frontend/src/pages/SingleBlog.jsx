@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { useSnackbar } from 'notistack';
 import axios from "../axios";
 import useAuth from "../context/AuthContext";
 import Navbar from "../components/Navbar";
@@ -7,10 +8,16 @@ import Navbar from "../components/Navbar";
 const SingleBlog = () => {
   const { slug } = useParams();
   const { token, user } = useAuth();
+  const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
   const [comment, setComment] = useState("");
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchSingleBlog();
+  }, [slug]);
 
   const fetchSingleBlog = async () => {
     try {
@@ -23,6 +30,9 @@ const SingleBlog = () => {
       setBlog(res.data.blog);
     } catch (error) {
       setError(error.response?.data?.message || "Error fetching blog");
+      enqueueSnackbar(error.response?.data?.message || "Error fetching blog", { 
+        variant: 'error' 
+      });
     } finally {
       setLoading(false);
     }
@@ -48,10 +58,6 @@ const SingleBlog = () => {
       console.error("Error posting comment:", error);
     }
   };
-
-  useEffect(() => {
-    fetchSingleBlog();
-  }, [slug]);
 
   if (loading) {
     return (

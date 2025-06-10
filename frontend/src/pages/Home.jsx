@@ -38,7 +38,6 @@ const Home = () => {
       let res = await axios.get(
         `/blogs?search=${search}&category=${category}&page=${page}&limit=${limit}`
       );
-      console.log(res);
       setBlogs(res.data.blogs);
       setTotalPages(Math.ceil(res.data.totalBlogs / limit));
     } catch (error) {
