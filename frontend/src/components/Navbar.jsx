@@ -1,21 +1,23 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import Logo from '../assets/logo.svg'
-import useAuth from '../context/AuthContext';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import Logo from "../assets/logo.svg";
+import useAuth from "../context/AuthContext";
+import ProfileModal from "./ProfileModal";
 
 const Navbar = () => {
-  let {token,user,setUser,setToken}=useAuth();
+  let { token, user, setUser, setToken } = useAuth();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  
-  
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+
   const handleLogout = () => {
-    setUser(null)
-    setToken(null)
-    navigate('/');
+    setUser(null);
+    setToken(null);
+    navigate("/");
   };
 
   return (
+   <>
     <nav className="bg-white shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
@@ -26,7 +28,7 @@ const Navbar = () => {
                 src={Logo} // Add your logo path here
                 alt="Quill.io"
               />
-              <span className='font-bold'>Quill.io</span>
+              <span className="font-bold">Quill.io</span>
             </Link>
           </div>
 
@@ -66,17 +68,26 @@ const Navbar = () => {
                 {isMenuOpen && (
                   <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
                     <div className="py-1">
-                      <Link
-                        to="/profile"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      <button
+                        onClick={() => {
+                          setIsProfileModalOpen(true);
+                          setIsMenuOpen(false);
+                        }}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       >
                         Your Profile
-                      </Link>
+                      </button>
                       <Link
                         to="/settings"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       >
                         Settings
+                      </Link>
+                       <Link
+                        to="/dashboard"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Dashboard
                       </Link>
                       <button
                         onClick={handleLogout}
@@ -147,12 +158,15 @@ const Navbar = () => {
               </>
             ) : (
               <>
-                <Link
-                  to="/profile"
-                  className="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50"
+                <button
+                  onClick={() => {
+                    setIsProfileModalOpen(true);
+                    setIsMenuOpen(false);
+                  }}
+                  className="block w-full text-left px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50"
                 >
                   Your Profile
-                </Link>
+                </button>
                 <Link
                   to="/settings"
                   className="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50"
@@ -171,6 +185,11 @@ const Navbar = () => {
         </div>
       )}
     </nav>
+     <ProfileModal 
+      isOpen={isProfileModalOpen} 
+      onClose={() => setIsProfileModalOpen(false)} 
+    />
+   </>
   );
 };
 

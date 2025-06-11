@@ -2,44 +2,46 @@ import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import axios from "../axios";
 import { Link } from "react-router-dom";
+import ProfileModal from "../components/ProfileModal";
 
 const Home = () => {
   let [blogs, setBlogs] = useState([]);
   let [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const limit = 10;
   const categories = [
-          "Technology",
-          "Programming",
-          "Web Development",
-          "Mobile Development",
-          "AI & Machine Learning",
-          "Data Science",
-          "Cybersecurity",
-          "Design & UX",
-          "Business",
-          "Startups",
-          "Productivity",
-          "Marketing",
-          "Finance",
-          "Health & Wellness",
-          "Travel",
-          "Education",
-          "Gaming",
-          "Lifestyle",
-          "News",
-          "Opinion",
-        ];
+    "Technology",
+    "Programming",
+    "Web Development",
+    "Mobile Development",
+    "AI & Machine Learning",
+    "Data Science",
+    "Cybersecurity",
+    "Design & UX",
+    "Business",
+    "Startups",
+    "Productivity",
+    "Marketing",
+    "Finance",
+    "Health & Wellness",
+    "Travel",
+    "Education",
+    "Gaming",
+    "Lifestyle",
+    "News",
+    "Opinion",
+  ];
   const fetchBlogs = async () => {
     try {
       let res = await axios.get(
         `/blogs?search=${search}&category=${category}&page=${page}&limit=${limit}`
       );
       console.log(res);
-      
+
       setBlogs(res.data.blogs);
       setTotalPages(Math.ceil(res.data.totalBlogs / limit));
     } catch (error) {
@@ -64,8 +66,6 @@ const Home = () => {
     setPage(1); // Reset to first page on category change
   };
 
-
-
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
@@ -78,6 +78,10 @@ const Home = () => {
           <p className="mt-4 max-w-2xl mx-auto text-center text-xl text-gray-500">
             Your platform for meaningful stories and ideas
           </p>
+          <ProfileModal
+            isOpen={isProfileModalOpen}
+            onClose={() => setIsProfileModalOpen(false)}
+          />
         </div>
       </div>
       {/* Search section */}
@@ -126,47 +130,41 @@ const Home = () => {
               <>
                 <div className="space-y-6">
                   {blogs?.map((blog) => (
-                    
-                    
                     <Link to={`/blog/${blog.slug}`} key={blog.slug}>
-                    <div
-                      
-                      className="bg-white shadow rounded-lg p-6 hover:shadow-md transition-shadow"
-                     
-                    >
-                      <h3 className="text-xl font-semibold text-gray-900">
-                        {blog.title}
-                      </h3>
-                      <div className="mt-4 flex justify-between items-center">
-                        <div className="text-sm text-gray-500">
-                          <span>{blog.category}</span>
-                          {/* <span className="mx-2">•</span> */}
-                          {/* <span>{new Date(blog.date).toLocaleDateString()}</span> */}
-                        </div>
-                        <div className="text-sm text-gray-500 flex items-center">
-                          <svg
-                            className="h-4 w-4 mr-1"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                            />
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                            />
-                          </svg>
-                          {blog.views}
+                      <div className="bg-white shadow rounded-lg p-6 hover:shadow-md transition-shadow">
+                        <h3 className="text-xl font-semibold text-gray-900">
+                          {blog.title}
+                        </h3>
+                        <div className="mt-4 flex justify-between items-center">
+                          <div className="text-sm text-gray-500">
+                            <span>{blog.category}</span>
+                            {/* <span className="mx-2">•</span> */}
+                            {/* <span>{new Date(blog.date).toLocaleDateString()}</span> */}
+                          </div>
+                          <div className="text-sm text-gray-500 flex items-center">
+                            <svg
+                              className="h-4 w-4 mr-1"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                              />
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                              />
+                            </svg>
+                            {blog.views}
+                          </div>
                         </div>
                       </div>
-                    </div>
                     </Link>
                   ))}
                 </div>
