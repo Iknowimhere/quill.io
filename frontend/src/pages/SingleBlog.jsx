@@ -14,6 +14,8 @@ const SingleBlog = () => {
   const [loading, setLoading] = useState(true);
   const [comment, setComment] = useState("");
   const [error, setError] = useState(null);
+  const [isLiked, setIsLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
 
   const fetchSingleBlog = async () => {
     try {
@@ -23,8 +25,14 @@ const SingleBlog = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(res);
       setBlog(res.data.blog);
+
+      // Update views when blog is fetched
+      await axios.post(`/blogs/${res.data.blog._id}/views`, null, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
     } catch (error) {
       setError(error.response?.data?.message || "Error fetching blog");
       enqueueSnackbar(error.response?.data?.message || "Error fetching blog", {
@@ -38,6 +46,13 @@ const SingleBlog = () => {
   useEffect(() => {
     fetchSingleBlog();
   }, [slug]);
+
+  useEffect(() => {
+    if (blog && user) {
+      setIsLiked(blog.likes.includes(user._id));
+      setLikeCount(blog.likes.length);
+    }
+  }, [blog, user]);
 
   const handleComment = async (e) => {
     e.preventDefault();
@@ -62,13 +77,16 @@ const SingleBlog = () => {
 
   const handleDeleteComment = async (commentId) => {
     try {
-      let res=await axios.delete(`/blogs/${blog._id}/comments/${commentId}`, {
+      let res = await axios.delete(`/blogs/${blog._id}/comments/${commentId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       console.log(res);
-      enqueueSnackbar("Comment deleted successfully", { variant: "success",autoHideDuration:3000 });
+      enqueueSnackbar("Comment deleted successfully", {
+        variant: "success",
+        autoHideDuration: 3000,
+      });
       fetchSingleBlog(); // Refresh comments after deletion
     } catch (error) {
       enqueueSnackbar(
@@ -77,6 +95,23 @@ const SingleBlog = () => {
           variant: "error",
         }
       );
+    }
+  };
+
+  const handleLike = async () => {
+    try {
+      const res = await axios.put(`/blogs/${blog._id}/likes`, null, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setIsLiked(res.data.isLiked);
+      setLikeCount(res.data.likes);
+      enqueueSnackbar(res.data.message, { variant: "success" });
+    } catch (error) {
+      enqueueSnackbar(error.response?.data?.message || "Error updating like", {
+        variant: "error",
+      });
     }
   };
 
@@ -144,9 +179,12 @@ const SingleBlog = () => {
             <h1 className="text-3xl font-bold text-gray-900 mb-4">
               {blog.title}
             </h1>
-            <p className="text-gray-700 leading-relaxed mb-6">
-              {blog.description}
-            </p>
+            <div
+              className="prose prose-lg max-w-none"
+              dangerouslySetInnerHTML={{
+                __html: blog.description,
+              }}
+            />
 
             {/* Author Info */}
             <div className="flex items-center border-t pt-6">
@@ -162,6 +200,34 @@ const SingleBlog = () => {
                 <p className="text-sm text-gray-500">{blog.authorId.role}</p>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Like and Comment Section */}
+        <div className="mt-4 bg-white rounded-lg shadow-md p-6">
+          {/* Like Button */}
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={handleLike}
+              className={`flex items-center space-x-1 ${
+                isLiked ? "text-red-500" : "text-gray-500"
+              } hover:text-red-500 transition-colors`}
+            >
+              <svg
+                className="w-6 h-6"
+                fill={isLiked ? "currentColor" : "none"}
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                />
+              </svg>
+              <span>{likeCount}</span>
+            </button>
           </div>
         </div>
 
@@ -208,7 +274,11 @@ const SingleBlog = () => {
                           {comment.userId.username}
                         </p>
                         <p className="text-xs text-gray-500">
-                          {new Date(comment.createdAt).toLocaleDateString()}
+                          {comment.createdAt ? new Date(comment.createdAt).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                          }) : 'Date unavailable'}
                         </p>
                       </div>
                     </div>

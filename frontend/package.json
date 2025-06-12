@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.8",
+    "@tinymce/tinymce-react": "^6.2.1",
     "axios": "^1.9.0",
     "frontend": "file:",
     "notistack": "^3.0.2",
