@@ -8,6 +8,9 @@ import useAuth from "./context/AuthContext";
 import AuthorDashboard from "./pages/AuthorDashboard";
 import EditBlog from "./pages/EditBlog";
 import CreateBlog from "./pages/CreateBlog";
+import AdminUsers from "./pages/AdminUsers";
+import AdminBlogs from "./pages/AdminBlogs";
+import AdminDashboard from "./pages/AdminDashBoard";
 const App = () => {
   let { user } = useAuth();
   return (
@@ -32,7 +35,7 @@ const App = () => {
         }
       />
       <Route
-        path="/edit-blog/:slug" // Change from :id to :slug
+        path="/edit-blog/:slug"
         element={
           <ProtectedRoute>
             <EditBlog />
@@ -44,6 +47,30 @@ const App = () => {
         element={
           <ProtectedRoute>
             <CreateBlog />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <AdminDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/users"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <AdminUsers />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/blogs"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <AdminBlogs />
           </ProtectedRoute>
         }
       />

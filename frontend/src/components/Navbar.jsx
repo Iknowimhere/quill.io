@@ -83,13 +83,20 @@ const Navbar = () => {
                         >
                           Settings
                         </Link>
-                        {/* Show Dashboard only for authors */}
+                        {user?.role === "admin" && (
+                          <Link
+                            to="/admin"
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          >
+                            Admin Dashboard
+                          </Link>
+                        )}
                         {user?.role === "author" && (
                           <Link
                             to="/dashboard"
                             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                           >
-                            Dashboard
+                            Author Dashboard
                           </Link>
                         )}
                         <button
@@ -176,13 +183,20 @@ const Navbar = () => {
                   >
                     Settings
                   </Link>
-                  {/* Show Dashboard only for authors in mobile menu */}
+                  {user?.role === "admin" && (
+                    <Link
+                      to="/admin"
+                      className="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50"
+                    >
+                      Admin Dashboard
+                    </Link>
+                  )}
                   {user?.role === "author" && (
                     <Link
                       to="/dashboard"
                       className="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50"
                     >
-                      Dashboard
+                      Author Dashboard
                     </Link>
                   )}
                   <button
