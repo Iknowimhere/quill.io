@@ -1,5 +1,5 @@
-import User from '../models/User.js';
-import Blog from '../models/Blog.js';
+import User from '../models/user.model.js';
+import Blog from '../models/blog.model.js';
 
 const getUsers = async (req, res,next) => {
     try {
@@ -48,7 +48,7 @@ const updateUserRole = async (req, res, next) => {
             throw err;
         }
         user.role = "admin";
-        await user.save();
+        await user.save({validateBeforeSave:false});
         res.status(200).json(user);
     } catch (error) {
         next(error);
@@ -77,4 +77,27 @@ const deleteComment = async (req, res, next) => {
     }
 };
 
-export { getUsers, getBlogs, updateUserRole, deleteComment };
+
+const deleteUser = async (req, res, next) => {
+    try {
+        const user = await User.findByIdAndDelete(req.params.id);
+        if(user.role === "admin") {
+            let err = new Error("Cannot delete admin user");
+            err.statusCode = 403;
+            throw err;
+        }
+        if(user.role === "author") {
+            await Blog.deleteMany({ authorId: user._id });    
+        }
+        if (!user) {
+            let err = new Error("User not found");
+            err.statusCode = 404;
+            throw err;
+        }
+        res.status(204).json({ message: "User deleted successfully" });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export { getUsers, getBlogs, updateUserRole, deleteComment, deleteUser };

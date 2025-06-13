@@ -19,8 +19,8 @@ router.put("/:id/likes",auth,toggleLike)
 
 
 //comments
-router.post("/:id/comments",auth,postComment)
 router.delete("/:id/comments/:commentId",auth,deleteComment)
+router.post("/:id/comments",auth,postComment)
 
 export default router;
 

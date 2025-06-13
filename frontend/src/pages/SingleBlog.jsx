@@ -282,7 +282,8 @@ const SingleBlog = () => {
                         </p>
                       </div>
                     </div>
-                    {user && comment.userId._id === user._id && (
+                    {/* Show delete button for comment owner or admin */}
+                    {user && (user.role === 'admin' || comment.userId._id === user._id) && (
                       <button
                         onClick={() => handleDeleteComment(comment._id)}
                         className="text-red-600 hover:text-red-800 text-sm flex items-center"

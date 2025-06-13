@@ -17,7 +17,9 @@ const AdminUsers = () => {
       const res = await axios.get("/admin/users", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setUsers(res.data.users);
+      console.log(res);
+      
+      setUsers(res.data);
     } catch (error) {
         console.log(error);
         
@@ -29,24 +31,19 @@ const AdminUsers = () => {
     }
   };
 
-  const handleRoleChange = async (userId, newRole) => {
-    try {
-      await axios.patch(
-        `/admin/users/${userId}/role`,
-        null,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      enqueueSnackbar("User role updated successfully", { variant: "success" });
-      fetchUsers();
-    } catch (error) {
-      enqueueSnackbar(error.response?.data?.message || "Error updating user role", {
-        variant: "error",
-      });
-    }
-  };
 
-  const handleDelete = async (userId) => {
-    if (!window.confirm("Are you sure you want to delete this user?")) return;
+
+  const handleDelete = async (userId, userRole) => {
+    // Prevent deletion of admin users
+    if (userRole === 'admin') {
+      enqueueSnackbar("Cannot delete admin users", { variant: "error" });
+      return;
+    }
+
+    if (!window.confirm("Are you sure you want to delete this user?" + 
+      (userRole === 'author' ? "\nAll their blogs will also be deleted!" : ""))) {
+      return;
+    }
 
     try {
       await axios.delete(`/admin/users/${userId}`, {
@@ -56,6 +53,22 @@ const AdminUsers = () => {
       fetchUsers();
     } catch (error) {
       enqueueSnackbar(error.response?.data?.message || "Error deleting user", {
+        variant: "error",
+      });
+    }
+  };
+
+  const handleUpgradeToAuthor = async (userId) => {
+    try {
+      await axios.put(
+        `/admin/users/${userId}/role`,
+        null,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      enqueueSnackbar("User upgraded to author successfully", { variant: "success" });
+      fetchUsers();
+    } catch (error) {
+      enqueueSnackbar(error.response?.data?.message || "Error upgrading user", {
         variant: "error",
       });
     }
@@ -101,26 +114,55 @@ const AdminUsers = () => {
                         className="h-10 w-10 rounded-full object-cover"
                       />
                       <div className="ml-4">
-                        <h2 className="text-lg font-medium text-gray-900">{user.username}</h2>
+                        <div className="flex items-center space-x-2">
+                          <h2 className="text-lg font-medium text-gray-900">{user.username}</h2>
+                          {(user.role === 'admin' || user.role === 'author') && (
+                            <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                              user.role === 'admin' 
+                                ? 'bg-red-100 text-red-800' 
+                                : 'bg-indigo-100 text-indigo-800'
+                            }`}>
+                              {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                            </span>
+                          )}
+                        </div>
                         <p className="text-sm text-gray-500">{user.email}</p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-4">
-                      <select
-                        value={user.role}
-                        onChange={(e) => handleRoleChange(user._id, e.target.value)}
-                        className="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                      >
-                        <option value="user">User</option>
-                        <option value="author">Author</option>
-                        <option value="admin">Admin</option>
-                      </select>
-                      <button
-                        onClick={() => handleDelete(user._id)}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        Delete
-                      </button>
+                      {user.role === 'user' ? (
+                        <button
+                          onClick={() => handleUpgradeToAuthor(user._id)}
+                          className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        >
+                          Upgrade to Author
+                        </button>
+                      ) : (
+                        <span className="text-sm text-gray-500">
+                          {user.role === 'admin' ? 'Administrator' : 'Author'}
+                        </span>
+                      )}
+                      {user.role !== 'admin' && (
+                        <button
+                          onClick={() => handleDelete(user._id, user.role)}
+                          className="inline-flex items-center text-red-600 hover:text-red-900"
+                        >
+                          <svg 
+                            className="h-5 w-5 mr-1" 
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                          >
+                            <path 
+                              strokeLinecap="round" 
+                              strokeLinejoin="round" 
+                              strokeWidth={2} 
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            />
+                          </svg>
+                          Delete
+                        </button>
+                      )}
                     </div>
                   </div>
                 </li>
